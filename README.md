@@ -80,4 +80,4 @@ A **GCS** garante controle, integridade e rastreabilidade sobre os artefatos do 
 - Everton Marlon Berlezi [everton65@unochapeco.edu.br]
 - Richard Leonardo Otto [richard1@unochapeco.edu.br]
 - Vitor Gabriel Cagliari Loli [vlolidev@unochapeco.edu.br]
-- Vitor Juan Bueno Chaves []
+- Vitor Juan Bueno Chaves [cosmos@unochapeco.edu.br]
