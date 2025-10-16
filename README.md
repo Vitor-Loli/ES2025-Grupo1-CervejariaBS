@@ -77,7 +77,7 @@ A **GCS** garante controle, integridade e rastreabilidade sobre os artefatos do 
 
 ### Autores
 - André Leonardo Ugolini []
-- Everton Marlon Berlezi []
+- Everton Marlon Berlezi [everton65@unochapeco.edu.br]
 - Richard Leonardo Otto [richard1@unochapeco.edu.br]
 - Vitor Gabriel Cagliari Loli [vlolidev@unochapeco.edu.br]
 - Vitor Juan Bueno Chaves []
