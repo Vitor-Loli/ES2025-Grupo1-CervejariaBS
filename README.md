@@ -58,7 +58,6 @@ O projeto BeboSim segue os valores e princípios do **Manifesto Ágil**:
 ### 📅 Práticas Adotadas
 
 - **Sprints curtos** de 2 semanas  
-- **Revisões e feedbacks contínuos** com o cliente  
 - **Equipe auto-organizada e colaborativa**  
 - **Foco na simplicidade e valor entregue**
 
