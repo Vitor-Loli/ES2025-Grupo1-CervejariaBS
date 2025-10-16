@@ -6,41 +6,101 @@
 
 ---
 
-## 📘 Introdução
+## 🧭 1. Introdução
 
-Este projeto tem como objetivo aplicar **Princípios Ágeis** e **Gerência de Configuração de Software (GCS)** no desenvolvimento de um **sistema de controle de produção e vendas** para a **Cervejaria BeboSim**.  
-A abordagem ágil permite entregas incrementais e adaptáveis, enquanto a GCS assegura rastreabilidade e controle sobre os artefatos do projeto.
+### 1.1. Propósito
+Este projeto visa documentar a especificação do **Sistema de Controle de Produção e Vendas da Cervejaria BeboSim**, empresa fictícia utilizada como estudo de caso para aplicar **Princípios Ágeis** e **Gerência de Configuração de Software (GCS)**.
+
+O sistema busca integrar todas as operações da cervejaria — desde a **produção**, **estoque**, **vendas** e **campanhas publicitárias** — em uma plataforma web moderna, segura e de fácil manutenção.
 
 ---
 
-## 🏭 A Cervejaria BeboSim
+### 1.2. Escopo do Projeto
+O sistema abrangerá o **cadastro e gerenciamento** de:
 
-A **BeboSim** é uma cervejaria em expansão que busca otimizar suas operações através de um sistema que integre produção, logística e vendas.
+- 🍻 **Produtos**: cervejas, refrigerantes, águas minerais  
+- 🏭 **Unidades de Produção**: fábricas com diferentes produtos e localizações  
+- 📦 **Embalagens**: materiais, volumes e custos  
+- 👥 **Equipes de Vendas**: vendedores, gerentes e regiões de atuação  
+- 🧾 **Clientes**: empresas (pessoas jurídicas)  
+- 💰 **Pedidos de Venda**: controle de emissão, produtos e responsáveis  
+- 📢 **Campanhas Publicitárias**: acompanhamento de retorno e investimentos  
 
-### 🔹 Descrição do Negócio
+Essas entidades estarão inter-relacionadas, permitindo controle de histórico, rastreabilidade e relatórios analíticos.
 
-A empresa produz e distribui:
+---
 
-- Cervejas (branca e escura)  
-- Refrigerantes (normal e light)  
-- Águas minerais (com e sem gás)
+### 1.3. Definições, Acrônimos e Abreviações
 
-Cada unidade de produção pode fabricar diferentes produtos e utiliza diversos tipos de **embalagens** (vidro, plástico e alumínio).  
-A estrutura comercial é composta por **equipes de vendas regionais**, cada uma com **vendedores e gerentes**, atendendo **clientes empresariais (CNPJs)**.
+| Termo | Definição |
+|--------|-----------|
+| **GCS** | Gerência de Configuração de Software |
+| **IEEE** | Institute of Electrical and Electronics Engineers |
+| **PO** | Product Owner |
+| **SM** | Scrum Master |
 
-### 🔹 Objetivo do Sistema
+---
 
-O sistema visa aprimorar a **gestão do ciclo de vida dos produtos**, desde a produção até a venda.
+## 🧩 2. Descrição Geral
 
-#### Funcionalidades Principais
+### 2.1. Perspectiva do Produto
+O sistema será uma **aplicação web responsiva**, acessível via navegadores em desktop e dispositivos móveis.  
+Ele substituirá planilhas e controles manuais por uma **plataforma centralizada e automatizada**, integrada aos processos da Cervejaria BeboSim.
 
-- **Cadastro e Gestão de Produtos**
-- **Gestão de Unidades de Produção**
-- **Gestão de Embalagens**
-- **Gestão de Equipes de Vendas**
-- **Gestão de Clientes**
-- **Gestão de Pedidos de Venda**
-- **Gestão de Campanhas Publicitárias**
+---
+
+### 2.2. Funções do Produto
+
+| Categoria | Funções Principais |
+|------------|--------------------|
+| **Produção** | Cadastro de produtos, fórmulas e unidades produtivas |
+| **Vendas** | Cadastro de equipes, vendedores, clientes e emissão de pedidos |
+| **Campanhas** | Criação, controle e análise de campanhas publicitárias |
+| **Relatórios** | Indicadores de produção, vendas, comissões e desempenho de campanhas |
+
+---
+
+### 2.3. Características dos Usuários
+
+| Tipo de Usuário | Descrição |
+|------------------|-----------|
+| **Gerente-Geral** | Visualiza todos os módulos e relatórios estratégicos |
+| **Gerente de Produção** | Administra produtos, fórmulas e fábricas |
+| **Gerente de Vendas** | Gerencia equipes e vendedores |
+| **Vendedor** | Registra clientes e pedidos de venda |
+
+---
+
+### 2.4. Restrições
+
+- O sistema deve ser desenvolvido com **tecnologias web modernas e responsivas**  
+- O acesso será controlado por **níveis de permissão**  
+- Deve garantir **integridade, segurança e consistência dos dados**  
+- O código será versionado e auditável via **Git/GitHub**
+
+---
+
+## ⚙️ 3. Requisitos Específicos
+
+Os requisitos serão detalhados em **Épicos**, **Histórias de Usuário** e **Critérios de Aceite**, conforme o framework **Scrum**.  
+Essas especificações estarão descritas na **Wiki do repositório**, incluindo requisitos funcionais e não funcionais.
+
+Exemplo de história de usuário:
+
+> **Como** gerente de produção  
+> **quero** cadastrar novos produtos e fórmulas  
+> **para que** o sistema registre automaticamente os custos e disponibilize-os para vendas.
+
+---
+
+## 🏗️ 4. Arquitetura do Sistema
+
+A arquitetura do sistema será documentada com base no **Modelo C4**, detalhando:
+
+- **Contexto** (nível macro da aplicação)  
+- **Contêineres** (módulos e componentes do sistema)  
+- **Componentes** (estruturas internas e tecnologias)  
+- **Código** (integrações e frameworks)
 
 ---
 
