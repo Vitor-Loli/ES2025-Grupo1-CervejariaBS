@@ -13,7 +13,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const projectNumber = 1; // número do seu Project v2
+            const projectNumber = 6; // número do seu Project v2
             const org = "SUA_ORGANIZACAO_OU_USER"; // ex: "logae"
             const columnName = "In Progress";
 
