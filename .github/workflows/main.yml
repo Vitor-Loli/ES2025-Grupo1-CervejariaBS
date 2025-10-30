@@ -43,7 +43,7 @@ jobs:
                 }
               }`;
           
-            const { organization } = await github.graphql(queryProject, {
+            const { user } = await github.graphql(queryProject, {
               org,
               number: projectNumber
             });
