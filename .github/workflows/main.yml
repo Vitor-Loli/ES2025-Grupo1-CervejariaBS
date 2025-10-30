@@ -13,22 +13,25 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const projectNumber = 6; // número do seu Project v2
-            const org = "SUA_ORGANIZACAO_OU_USER"; // ex: "logae"
+            const projectNumber = 6; // número do Project v2
+            const org = "logae"; // org ou user
             const columnName = "In Progress";
-
-            // Busca o ID do projeto
-            const { organization } = await github.graphql(`
+          
+            // Busca o ID do projeto e o campo "Status"
+            const queryProject = `
               query($org: String!, $number: Int!) {
                 organization(login: $org) {
                   projectV2(number: $number) {
                     id
                     fields(first: 50) {
                       nodes {
-                        id
-                        name
-                        dataType
+                        ... on ProjectV2FieldCommon {
+                          id
+                          name
+                        }
                         ... on ProjectV2SingleSelectField {
+                          id
+                          name
                           options {
                             id
                             name
@@ -38,20 +41,24 @@ jobs:
                     }
                   }
                 }
-              }
-            `, { org, number: projectNumber });
-
+              }`;
+          
+            const { organization } = await github.graphql(queryProject, {
+              org,
+              number: projectNumber
+            });
+          
             const project = organization.projectV2;
             const statusField = project.fields.nodes.find(f => f.name === "Status");
             const option = statusField.options.find(o => o.name === columnName);
-
+          
             // Busca o item do projeto associado à issue
-            const { repository } = await github.graphql(`
+            const queryIssue = `
               query($owner: String!, $repo: String!, $issue: Int!) {
                 repository(owner: $owner, name: $repo) {
                   issue(number: $issue) {
                     id
-                    projectItems(first: 10) {
+                    projectItems(first: 20) {
                       nodes {
                         id
                         project {
@@ -61,26 +68,27 @@ jobs:
                     }
                   }
                 }
-              }
-            `, {
+              }`;
+          
+            const { repository } = await github.graphql(queryIssue, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue: context.issue.number
             });
-
+          
             const issue = repository.issue;
             const projectItem = issue.projectItems.nodes.find(p => p.project.number === projectNumber);
-
+          
             if (!projectItem) {
-              core.warning("Este issue não está em um item do Project V2 especificado.");
+              core.warning("Este issue ainda não está vinculado ao Project V2 especificado.");
               return;
             }
-
-            // Atualiza o campo de status
-            await github.graphql(`
-              mutation($itemId: ID!, $fieldId: ID!, $optionId: String!) {
+          
+            // Atualiza o campo de status do item
+            const mutation = `
+              mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
                 updateProjectV2ItemFieldValue(input: {
-                  projectId: "${project.id}",
+                  projectId: $projectId,
                   itemId: $itemId,
                   fieldId: $fieldId,
                   value: { singleSelectOptionId: $optionId }
@@ -89,11 +97,13 @@ jobs:
                     id
                   }
                 }
-              }
-            `, {
+              }`;
+          
+            await github.graphql(mutation, {
+              projectId: project.id,
               itemId: projectItem.id,
               fieldId: statusField.id,
               optionId: option.id
             });
-
+          
             core.notice(`Issue movido para "${columnName}" com sucesso.`);
