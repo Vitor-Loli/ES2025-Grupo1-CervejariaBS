@@ -13,28 +13,28 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const projectNumber = 10; // número do seu Project v2
             const username = "Vitor-Loli"; // seu usuário do GitHub
-            const columnName = "In Progress";
+            const columnName = "In Progress"; // nome da coluna (Status)
 
-            // 🔹 Busca o ID do seu projeto e o campo "Status"
-            const queryProject = `
-              query($login: String!, $number: Int!) {
+            // 1️⃣ Pega o último Project V2 aberto do usuário
+            const queryProjects = `
+              query($login: String!) {
                 user(login: $login) {
-                  projectV2(number: $number) {
-                    id
-                    fields(first: 50) {
-                      nodes {
-                        ... on ProjectV2FieldCommon {
-                          id
-                          name
-                        }
-                        ... on ProjectV2SingleSelectField {
-                          id
-                          name
-                          options {
+                  projectsV2(first: 5, orderBy: {field: UPDATED_AT, direction: DESC}) {
+                    nodes {
+                      id
+                      title
+                      number
+                      closed
+                      fields(first: 50) {
+                        nodes {
+                          ... on ProjectV2SingleSelectField {
                             id
                             name
+                            options {
+                              id
+                              name
+                            }
                           }
                         }
                       }
@@ -43,30 +43,30 @@ jobs:
                 }
               }`;
 
-            const projectResponse = await github.graphql(queryProject, {
+            const { user } = await github.graphql(queryProjects, {
               login: username,
-              number: projectNumber
             });
 
-            const project = projectResponse.user.projectV2;
+            const project = user.projectsV2.nodes.find(p => !p.closed);
+
             if (!project) {
-              core.setFailed(`❌ Projeto número ${projectNumber} não encontrado para o usuário ${username}.`);
+              core.warning("Nenhum ProjectV2 aberto encontrado para o usuário.");
               return;
             }
 
             const statusField = project.fields.nodes.find(f => f.name === "Status");
             if (!statusField) {
-              core.setFailed('❌ Campo "Status" não encontrado no projeto.');
+              core.warning("O campo 'Status' não foi encontrado neste Project.");
               return;
             }
 
             const option = statusField.options.find(o => o.name === columnName);
             if (!option) {
-              core.setFailed(`❌ Opção "${columnName}" não encontrada no campo "Status".`);
+              core.warning(`A opção '${columnName}' não existe no campo Status.`);
               return;
             }
 
-            // 🔹 Busca o item do projeto associado à issue
+            // 2️⃣ Busca o item do projeto associado à issue
             const queryIssue = `
               query($owner: String!, $repo: String!, $issue: Int!) {
                 repository(owner: $owner, name: $repo) {
@@ -76,6 +76,7 @@ jobs:
                       nodes {
                         id
                         project {
+                          id
                           number
                         }
                       }
@@ -84,21 +85,21 @@ jobs:
                 }
               }`;
 
-            const issueResponse = await github.graphql(queryIssue, {
+            const { repository } = await github.graphql(queryIssue, {
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue: context.issue.number
+              issue: context.issue.number,
             });
 
-            const issue = issueResponse.repository.issue;
-            const projectItem = issue.projectItems.nodes.find(p => p.project.number === projectNumber);
+            const issue = repository.issue;
+            const projectItem = issue.projectItems.nodes.find(p => p.project.id === project.id);
 
             if (!projectItem) {
-              core.warning("⚠️ Esta issue ainda não está vinculada ao Project V2 especificado.");
+              core.warning("Este issue ainda não está vinculado ao Project V2 encontrado.");
               return;
             }
 
-            // 🔹 Atualiza o campo de status do item
+            // 3️⃣ Atualiza o campo 'Status' para 'In Progress'
             const mutation = `
               mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
                 updateProjectV2ItemFieldValue(input: {
@@ -117,7 +118,7 @@ jobs:
               projectId: project.id,
               itemId: projectItem.id,
               fieldId: statusField.id,
-              optionId: option.id
+              optionId: option.id,
             });
 
-            core.notice(`✅ Issue movido para "${columnName}" com sucesso.`);
+            core.notice(`✅ Issue movido para '${columnName}' no projeto '${project.title}'.`);
