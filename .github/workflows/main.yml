@@ -14,7 +14,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const projectNumber = 6; // número do Project v2
-            const org = "logae"; // org ou user
+            const org = "Vitor-Loli"; // org ou user
             const columnName = "In Progress";
           
             // Busca o ID do projeto e o campo "Status"
