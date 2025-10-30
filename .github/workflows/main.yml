@@ -1,5 +1,4 @@
 name: Move to "In Progress" when assigned
-
 on:
   issues:
     types: [assigned]
@@ -13,13 +12,14 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const username = "Vitor-Loli"; // seu usuário do GitHub
             const columnName = "In Progress"; // nome da coluna (Status)
+            const owner = "Vitor-Loli"; // dono do repositório
+            const repoName = "ES2025-Grupo1-CervejariaBS"; // nome do repositório
 
-            // 1️⃣ Pega o último Project V2 aberto do usuário
+            // 1️⃣ Pega os últimos Projects V2 abertos do repositório
             const queryProjects = `
-              query($login: String!) {
-                user(login: $login) {
+              query($owner: String!, $repo: String!) {
+                repository(owner: $owner, name: $repo) {
                   projectsV2(first: 5, orderBy: {field: UPDATED_AT, direction: DESC}) {
                     nodes {
                       id
@@ -41,16 +41,14 @@ jobs:
                     }
                   }
                 }
-              }`;
+              }
+            `;
 
-            const { user } = await github.graphql(queryProjects, {
-              login: username,
-            });
-
-            const project = user.projectsV2.nodes.find(p => !p.closed);
+            const { repository } = await github.graphql(queryProjects, { owner, repo: repoName });
+            const project = repository.projectsV2.nodes.find(p => !p.closed);
 
             if (!project) {
-              core.warning("Nenhum ProjectV2 aberto encontrado para o usuário.");
+              core.warning("Nenhum ProjectV2 aberto encontrado para o repositório.");
               return;
             }
 
@@ -75,23 +73,16 @@ jobs:
                     projectItems(first: 20) {
                       nodes {
                         id
-                        project {
-                          id
-                          number
-                        }
+                        project { id number }
                       }
                     }
                   }
                 }
-              }`;
+              }
+            `;
 
-            const { repository } = await github.graphql(queryIssue, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue: context.issue.number,
-            });
-
-            const issue = repository.issue;
+            const { repository: repoData } = await github.graphql(queryIssue, { owner, repo: repoName, issue: context.issue.number });
+            const issue = repoData.issue;
             const projectItem = issue.projectItems.nodes.find(p => p.project.id === project.id);
 
             if (!projectItem) {
@@ -102,17 +93,16 @@ jobs:
             // 3️⃣ Atualiza o campo 'Status' para 'In Progress'
             const mutation = `
               mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
-                updateProjectV2ItemFieldValue(input: {
-                  projectId: $projectId,
-                  itemId: $itemId,
-                  fieldId: $fieldId,
-                  value: { singleSelectOptionId: $optionId }
+                updateProjectV2ItemFieldValue(input: { 
+                  projectId: $projectId, 
+                  itemId: $itemId, 
+                  fieldId: $fieldId, 
+                  value: { singleSelectOptionId: $optionId } 
                 }) {
-                  projectV2Item {
-                    id
-                  }
+                  projectV2Item { id }
                 }
-              }`;
+              }
+            `;
 
             await github.graphql(mutation, {
               projectId: project.id,
